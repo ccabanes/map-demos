@@ -1,0 +1,172 @@
+
+<!-- saved from url=(0025)http://leaflet.melard.fr/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>WMTS examples</title>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width">
+
+<link rel="stylesheet" href="css/leaflet.css">
+<link rel="stylesheet" href="css/L.Control.MousePosition.css">
+     
+<script src="lib/leaflet-src.js"></script>
+<script src="lib/proj4-compressed.js"></script>
+<script src="src/proj4leaflet.js"></script>
+<script src="lib/leaflet-tilelayer-wmts-src.js"></script>
+<script src="lib/L.Control.MousePosition.js"></script>
+<script src="lib/jquery-1.12.0.min.js"></script>
+
+</head>
+
+<body class="">
+	<div id="map_3857" style="height: 33%; width: 100%; position: relative;"></div>
+	<div id="map_4326" style="height: 33%; width: 100%; position: relative;"></div>
+	<div id="map_25830" style="height: 33%; width: 100%; position: relative;"></div>
+<script>
+
+	var url = "http://www.ign.es/wmts/pnoa-ma?";
+	var urltopo= "http://terramapas.icv.gva.es/topografico/wmts/";
+	var wmtsParams="service=WMTS&request=GetCapabilities";
+	
+	$( document ).ready(function(){
+
+	$.ajax({
+		  url: url+wmtsParams,
+		}).done(function(response) {						
+	  	console.log("Capabilities XML: %O", response);
+	}).fail(function(e){
+		console.log("Error: " + e);
+	});
+
+
+	var crsETRS89 = L.CRS.proj4js('EPSG:25830', '+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs', 
+				{
+					resolutions: [2179827.00892857, 1089913.50446429, 544956.752232143,
+					272478.376116071, 136239.188058036, 68119.5940290179, 34059.7970145089,
+					14174.107142857141, 9449.404761904761, 7087.053571428571,
+					4724.702380952381, 2362.3511904761904, 944.9404761904761, 472.4702380952381],						
+					origin:[0.0, 0.0]
+					
+				});
+
+
+
+
+
+	var CRS_4326 = L.extend({}, L.CRS, {
+		projection: L.extend({}, L.Projection.LonLat, {bounds:L.bounds([-180, -90], [180, 90])}),
+		transformation: new L.Transformation(1 / 180, 1, -1 / 180, 0.5)
+	});
+
+	var CRS_3857 = L.CRS.EPSG3857;
+	var CRS_25830 = crsETRS89;
+	
+	console.log("New 4326 %O",CRS_4326);
+	console.log("Old 4326 %O",L.CRS.EPSG4326);
+	
+	var map = L.map('map_3857', {
+	  crs: CRS_3857,
+	  continuousWorld: true,
+	  worldCopyJump: false
+	}).setView([39.425, -0.37], 4);
+
+	var map4326 = L.map('map_4326', {
+	  crs: CRS_4326,
+	  continuousWorld: true,
+	  worldCopyJump: false
+	}).setView([39.425, -0.37], 4);
+
+	var map25830 = L.map('map_25830', {
+	  crs: CRS_25830,
+	  continuousWorld: true,
+	  worldCopyJump: false
+	}).setView([39.425, -0.37], 7);
+
+
+
+	//Build matrix with zoom and topLeftCorner 4 4326CRS
+	var matrix4326 = getMatrix("EPSG:4326:", new L.LatLng(90 ,-180),19);
+	var matrix25830 = getMatrix25380();
+	var matrix3857 = getMatrix("", new L.LatLng(20037508.3428,-20037508.3428),22);
+
+	var layer3857 = createWMTSlayer(url, "OI.OrthoimageCoverage", "GoogleMapsCompatible", matrix3857);
+	var layer4326 = createWMTSlayer(url, "OI.OrthoimageCoverage", "EPSG:4326", matrix4326,256);	
+	var layer25830 = createWMTSlayer(urltopo, "topografico", "ETRS89CV", matrix25830);
+
+
+	map.addLayer(layer3857);	
+	map4326.addLayer(layer4326);	
+	map25830.addLayer(layer25830);
+
+	L.control.mousePosition().addTo(map);
+	L.control.mousePosition().addTo(map4326);
+	L.control.mousePosition().addTo(map25830);
+
+	L.control.scale({'position':'bottomleft','metric':true,'imperial':false}).addTo(map);
+	L.control.scale({'position':'bottomleft','metric':true,'imperial':false}).addTo(map4326);
+	L.control.scale({'position':'bottomleft','metric':true,'imperial':false}).addTo(map25830);
+
+	}) 
+
+	//Build id-leftCorner matrix 
+	function getMatrix(iname, latLong, index){		
+		var matrixId = new Array(index);
+        for (var i= 0; i<index; i++) {
+            matrixId[i]= {
+                identifier    : iname? iname + i : "" + i,
+                topLeftCorner : latLong         
+            };
+        }
+        return matrixId;
+	}
+
+	function getMatrix25380(){
+		var matrix = new Array(19);
+		matrix[0]  = {identifier: 1, topLeftCorner : new L.LatLng( -1968157.095, 22856087 )};
+        matrix[1]  = {identifier: 1, topLeftCorner : new L.LatLng( -1968157.095, 12837333 )};
+        matrix[2]  = {identifier: 2, topLeftCorner : new L.LatLng( -1968157.095, 7827955  )};
+        matrix[3]  = {identifier: 3, topLeftCorner : new L.LatLng( -1968157.095, 7827955  )};
+        matrix[4]  = {identifier: 4, topLeftCorner : new L.LatLng( -1968157.095, 7827955  )};
+        matrix[5]  = {identifier: 5, topLeftCorner : new L.LatLng( -1968157.095, 7827955  )};
+        matrix[6]  = {identifier: 6, topLeftCorner : new L.LatLng( -1968157.095, 7514869  )};
+        matrix[7]  = {identifier: 7, topLeftCorner : new L.LatLng( -1968157.095, 7358326  )};
+        matrix[8]  = {identifier: 8, topLeftCorner : new L.LatLng( -1968157.095, 7280055  )};
+        matrix[9]  = {identifier: 9, topLeftCorner : new L.LatLng( -1968157.095, 7280055  )};
+        matrix[10] = {identifier:10, topLeftCorner : new L.LatLng( -1968157.095, 7280055  )};
+        matrix[11] = {identifier:11, topLeftCorner : new L.LatLng( -1968157.095, 7280055  )};
+        matrix[12] = {identifier:12, topLeftCorner : new L.LatLng( -1968157.095, 7275163  )};
+        matrix[13] = {identifier:13, topLeftCorner : new L.LatLng( -1968157.095, 7272717  )};
+        matrix[14] = {identifier:14, topLeftCorner : new L.LatLng( -1968157.095, 7271494  )};
+        matrix[15] = {identifier:15, topLeftCorner : new L.LatLng( -1968157.095, 7272105  )};
+        matrix[16] = {identifier:16, topLeftCorner : new L.LatLng( -1968157.095, 7271800  )};
+        matrix[17] = {identifier:17, topLeftCorner : new L.LatLng( -1968157.095, 7271647  )};
+        matrix[18] = {identifier:18, topLeftCorner : new L.LatLng( -1968157.095, 7271570  )};
+        matrix[19] = {identifier:19, topLeftCorner : new L.LatLng( -1968157.095, 7271532  )};
+        return matrix
+    }
+
+    function createWMTSlayer(url, layer, tilematrixSet, matrix, tileSize){
+		var layer = layer;
+		var tilematrixSet = tilematrixSet;
+		if(!tileSize){
+			tileSize = 256;
+		}
+		var wmtsLayer = new L.TileLayer.WMTS( url ,
+			           {
+			               layer: layer,
+			               style: "default",
+			               tilematrixSet: tilematrixSet,
+			               format: "image/png",
+			               matrixIds: matrix, 
+			               tileSize: tileSize
+			           });
+		return wmtsLayer;
+    }
+	
+	//4326 resolutions
+	//[0.703125, 0.3515625, 0.17578125, 0.087890625, 0.0439453125, 0.02197265625, 0.010986328125, 0.0054931640625, 0.00274658203125, 0.001373291015625, 0.0006866455078125, 0.00034332275390625, 0.000171661376953125, 0.0000858306884765625, 0.00004291534423828125, 0.000021457672119140625, 0.000010728836059570312, 0.000005364418029785156]
+</script>
+</body>
+</html>
