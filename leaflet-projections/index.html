@@ -41,15 +41,84 @@
 	});
 
 
+/*
 	var crsETRS89 = L.CRS.proj4js('EPSG:25830', '+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs', 
-				{
-					resolutions: [2179827.00892857, 1089913.50446429, 544956.752232143,
-					272478.376116071, 136239.188058036, 68119.5940290179, 34059.7970145089,
-					14174.107142857141, 9449.404761904761, 7087.053571428571,
-					4724.702380952381, 2362.3511904761904, 944.9404761904761, 472.4702380952381],						
-					origin:[0.0, 0.0]
-					
-				});
+		[207256.000000,4140229.000000,1209991.000000,4565432.000000], 
+		{
+			resolutions: [610.35123300645204835746,305.17561650322744526420,152.58780825161315419791,76.29390412580644920126,38.14695206290335960375,19.07347603145165138017,9.53673801572581147923,3.96874785750115641747,2.64583190500077103380,1.98437392875057820874,1.32291595250038551690,0.66145797625019273625,0.26458319050007705897,0.13229159525003852949],						
+			origin:[0.0, 0.0]
+			
+		});
+*/
+	
+var crsETRS89 = new L.Proj.CRS.TMS('EPSG:25830',
+   '+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs',
+    [207256.000000,4140229.000000,1209991.000000,4565432.000000], 
+    {
+        origin: [0, 0],
+        resolutions: [
+              610.35123300645204835746,305.17561650322744526420,152.58780825161315419791,76.29390412580644920126,38.14695206290335960375,19.07347603145165138017,9.53673801572581147923,3.96874785750115641747,2.64583190500077103380,1.98437392875057820874,1.32291595250038551690,0.66145797625019273625,0.26458319050007705897,0.13229159525003852949
+              ],
+    }
+);
+
+
+
+
+
+
+
+var pnoaETRS89 = new L.Proj.CRS.TMS('EPSG:25830',
+   '+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs',    
+   [-1079526.5850090983,2500875.6941688014,1228424.5314746893,5056867.6606168505], 
+    {
+        origin: [0, 0],
+        resolutions: [78271.51698,
+			39135.75849,
+			19567.87929,
+			9783.9396225,
+			4891.96981125,
+			2445.984905625,
+			1222.9924528125,
+			611.4962264063,
+			305.7481132031,
+			152.8740566016,
+			76.4370283008,
+			38.2185141504,
+			19.1092570752,
+			9.5546285376,
+			4.7773142688,
+			2.3886571344,
+			1.1943285672,
+			0.5971642836,
+			0.2985821418,
+			0.1492910709,
+              ],
+    }
+);
+
+L.CRS.EPSG25830 = new L.Proj.CRS.TMS('EPSG:25830',
+		   '+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs',
+		    [207256.000000,4140229.000000,1209991.000000,4565432.000000], 
+		    {
+		        origin: [0, 0],
+		        resolutions: [
+		              610.35123300645204835746,305.17561650322744526420,152.58780825161315419791,76.29390412580644920126,38.14695206290335960375,19.07347603145165138017,9.53673801572581147923,3.96874785750115641747,2.64583190500077103380,1.98437392875057820874,1.32291595250038551690,0.66145797625019273625,0.26458319050007705897,0.13229159525003852949
+		              ],
+		    }
+		);
+
+
+
+  var proj25830 = L.CRS["EPSG25830"];
+  var pos1 = new L.LatLng(21.899, -18.162);
+  var pos12= new L.LatLng(45.286, 6.289 );
+  var project1 = proj25830.projection.project(pos1);
+  var project2 = proj25830.projection.project(pos12);
+  
+  console.log("coord1 %O", project1);
+  console.log("coord2 %O", project2);
+
 
 
 
@@ -61,7 +130,7 @@
 	});
 
 	var CRS_3857 = L.CRS.EPSG3857;
-	var CRS_25830 = crsETRS89;
+	var CRS_25830 = pnoaETRS89;
 	
 	console.log("New 4326 %O",CRS_4326);
 	console.log("Old 4326 %O",L.CRS.EPSG4326);
@@ -78,11 +147,12 @@
 	  worldCopyJump: false
 	}).setView([39.425, -0.37], 4);
 
+
 	var map25830 = L.map('map_25830', {
 	  crs: CRS_25830,
 	  continuousWorld: true,
 	  worldCopyJump: false
-	}).setView([39.425, -0.37], 7);
+	}).setView([39.425, -0.37], 8);
 
 
 
@@ -93,8 +163,11 @@
 
 	var layer3857 = createWMTSlayer(url, "OI.OrthoimageCoverage", "GoogleMapsCompatible", matrix3857);
 	var layer4326 = createWMTSlayer(url, "OI.OrthoimageCoverage", "EPSG:4326", matrix4326,256);	
-	var layer25830 = createWMTSlayer(urltopo, "topografico", "ETRS89CV", matrix25830);
+	//var layer25830 = createWMTSlayer(urltopo, "topografico", "ETRS89CV", matrix25830);
+	var layer25830 = createWMTSlayer(url, "OI.OrthoimageCoverage", "EPSG:25830", matrix25830);
 
+	console.log("3857 %O", matrix3857);
+	console.log("25830 %O", matrix25830);
 
 	map.addLayer(layer3857);	
 	map4326.addLayer(layer4326);	
@@ -124,27 +197,45 @@
 
 	function getMatrix25380(){
 		var matrix = new Array(19);
-		matrix[0]  = {identifier: 1, topLeftCorner : new L.LatLng( -1968157.095, 22856087 )};
-        matrix[1]  = {identifier: 1, topLeftCorner : new L.LatLng( -1968157.095, 12837333 )};
-        matrix[2]  = {identifier: 2, topLeftCorner : new L.LatLng( -1968157.095, 7827955  )};
-        matrix[3]  = {identifier: 3, topLeftCorner : new L.LatLng( -1968157.095, 7827955  )};
-        matrix[4]  = {identifier: 4, topLeftCorner : new L.LatLng( -1968157.095, 7827955  )};
-        matrix[5]  = {identifier: 5, topLeftCorner : new L.LatLng( -1968157.095, 7827955  )};
-        matrix[6]  = {identifier: 6, topLeftCorner : new L.LatLng( -1968157.095, 7514869  )};
-        matrix[7]  = {identifier: 7, topLeftCorner : new L.LatLng( -1968157.095, 7358326  )};
-        matrix[8]  = {identifier: 8, topLeftCorner : new L.LatLng( -1968157.095, 7280055  )};
-        matrix[9]  = {identifier: 9, topLeftCorner : new L.LatLng( -1968157.095, 7280055  )};
-        matrix[10] = {identifier:10, topLeftCorner : new L.LatLng( -1968157.095, 7280055  )};
-        matrix[11] = {identifier:11, topLeftCorner : new L.LatLng( -1968157.095, 7280055  )};
-        matrix[12] = {identifier:12, topLeftCorner : new L.LatLng( -1968157.095, 7275163  )};
-        matrix[13] = {identifier:13, topLeftCorner : new L.LatLng( -1968157.095, 7272717  )};
-        matrix[14] = {identifier:14, topLeftCorner : new L.LatLng( -1968157.095, 7271494  )};
-        matrix[15] = {identifier:15, topLeftCorner : new L.LatLng( -1968157.095, 7272105  )};
-        matrix[16] = {identifier:16, topLeftCorner : new L.LatLng( -1968157.095, 7271800  )};
-        matrix[17] = {identifier:17, topLeftCorner : new L.LatLng( -1968157.095, 7271647  )};
-        matrix[18] = {identifier:18, topLeftCorner : new L.LatLng( -1968157.095, 7271570  )};
-        matrix[19] = {identifier:19, topLeftCorner : new L.LatLng( -1968157.095, 7271532  )};
+		matrix[0]  = {identifier: 0, topLeftCorner : new L.LatLng(  22856087, -1968157.095 )};
+        matrix[1]  = {identifier: 1, topLeftCorner : new L.LatLng(  12837333, -1968157.095 )};
+        matrix[2]  = {identifier: 2, topLeftCorner : new L.LatLng(  7827955 , -1968157.095  )};
+        matrix[3]  = {identifier: 3, topLeftCorner : new L.LatLng(  7827955 , -1968157.095  )};
+        matrix[4]  = {identifier: 4, topLeftCorner : new L.LatLng(  7827955 , -1968157.095  )};
+        matrix[5]  = {identifier: 5, topLeftCorner : new L.LatLng(  7827955 , -1968157.095  )};
+        matrix[6]  = {identifier: 6, topLeftCorner : new L.LatLng(  7514869 , -1968157.095  )};
+        matrix[7]  = {identifier: 7, topLeftCorner : new L.LatLng(  7358326 , -1968157.095  )};
+        matrix[8]  = {identifier: 8, topLeftCorner : new L.LatLng(  7280055 , -1968157.095  )};
+        matrix[9]  = {identifier: 9, topLeftCorner : new L.LatLng(  7280055 , -1968157.095  )};
+        matrix[10] = {identifier:10, topLeftCorner : new L.LatLng(  7280055 , -1968157.095  )};
+        matrix[11] = {identifier:11, topLeftCorner : new L.LatLng(  7280055 , -1968157.095  )};
+        matrix[12] = {identifier:12, topLeftCorner : new L.LatLng(  7275163 , -1968157.095  )};
+        matrix[13] = {identifier:13, topLeftCorner : new L.LatLng(  7272717 , -1968157.095  )};
+        matrix[14] = {identifier:14, topLeftCorner : new L.LatLng(  7271494 , -1968157.095  )};
+        matrix[15] = {identifier:15, topLeftCorner : new L.LatLng(  7272105 , -1968157.095  )};
+        matrix[16] = {identifier:16, topLeftCorner : new L.LatLng(  7271800 , -1968157.095  )};
+        matrix[17] = {identifier:17, topLeftCorner : new L.LatLng(  7271647 , -1968157.095  )};
+        matrix[18] = {identifier:18, topLeftCorner : new L.LatLng(  7271570 , -1968157.095  )};
+        matrix[19] = {identifier:19, topLeftCorner : new L.LatLng(  7271532 , -1968157.095  )};
         return matrix
+    }
+
+    function getTopograficoMatrix(){
+    	var matrix = new Array(13);
+		matrix[0]  = {identifier: 0, topLeftCorner : new L.LatLng(  4608978.746949, 207256  )};
+        matrix[1]  = {identifier: 1, topLeftCorner : new L.LatLng(  4608978.746949, 207256  )};
+        matrix[2]  = {identifier: 2, topLeftCorner : new L.LatLng(  4569916.268037, 207256  )};
+        matrix[3]  = {identifier: 3, topLeftCorner : new L.LatLng(  4569916.268037, 207256  )};
+        matrix[4]  = {identifier: 4, topLeftCorner : new L.LatLng(  4569916.268037, 207256  )};
+        matrix[5]  = {identifier: 5, topLeftCorner : new L.LatLng(  4569916.268037, 207256  )};
+        matrix[6]  = {identifier: 6, topLeftCorner : new L.LatLng(  4567474.863105, 207256  )};
+        matrix[7]  = {identifier: 7, topLeftCorner : new L.LatLng(  4565932.770187, 207256  )};
+        matrix[8]  = {identifier: 8, topLeftCorner : new L.LatLng(  4565594.103703, 207256  )};
+        matrix[9]  = {identifier: 9, topLeftCorner : new L.LatLng(  4565932.770187, 207256  )};
+        matrix[10] = {identifier:10, topLeftCorner : new L.LatLng(  4565594.103703, 207256  )};
+        matrix[11] = {identifier:11, topLeftCorner : new L.LatLng(  4565594.103703, 207256  )};
+        matrix[12] = {identifier:12, topLeftCorner : new L.LatLng(  4565458.637110, 207256  )};
+        matrix[13] = {identifier:13, topLeftCorner : new L.LatLng(  4565458.637110, 207256  )};  return matrix;      
     }
 
     function createWMTSlayer(url, layer, tilematrixSet, matrix, tileSize){
