@@ -1528,9 +1528,13 @@ L.CRS.EPSG900913 = L.extend({}, L.CRS.EPSG3857, {
 
 L.CRS.EPSG4326 = L.extend({}, L.CRS, {
 	code: 'EPSG:4326',
-
-	projection: L.Projection.LonLat,
-	transformation: new L.Transformation(1 / 360, 0.5, -1 / 360, 0.5)
+	//https://github.com/Leaflet/Leaflet/commit/58ea602c089cc2966298a1375312fbdb804f99bd fixes transformation error.
+	//transformation: new L.Transformation(1 / 360, 0.5, -1 / 360, 0.5)
+	//projection: L.Projection.LonLat,
+	projection: L.extend({}, L.Projection.LonLat, {
+			bounds:L.bounds([-180, -90], [180, 90])
+		}),
+	transformation: new L.Transformation(1 / 180, 1, -1 / 180, 0.5)
 });
 
 
@@ -1914,11 +1918,15 @@ L.Map = L.Class.extend({
 
 			this._sizeChanged = false;
 		}
+		var result = this._size.clone();
+		console.log("getSize: %O", result);
 		return this._size.clone();
 	},
 
 	getPixelBounds: function () {
 		var topLeftPoint = this._getTopLeftPoint();
+		var result = L.Bounds(topLeftPoint, topLeftPoint.add(this.getSize()));;
+		console.log("getPixelBounds: %O", result);
 		return new L.Bounds(topLeftPoint, topLeftPoint.add(this.getSize()));
 	},
 
@@ -1940,11 +1948,15 @@ L.Map = L.Class.extend({
 
 	getZoomScale: function (toZoom) {
 		var crs = this.options.crs;
-		return crs.scale(toZoom) / crs.scale(this._zoom);
+		var result = crs.scale(toZoom) / crs.scale(this._zoom);
+		debugger;
+		return result;
 	},
 
 	getScaleZoom: function (scale) {
-		return this._zoom + (Math.log(scale) / Math.LN2);
+		var result = this._zoom + (Math.log(scale) / Math.LN2);
+		console.log("getScaleZoom: " + result );
+		return result;
 	},
 
 
@@ -5923,6 +5935,8 @@ L.Circle = L.Path.extend({
 	// TODO Earth hardcoded, move into projection code!
 
 	_getLatRadius: function () {
+		debugger;
+		console.log("Harcored _getLatRadius");
 		return (this._mRadius / 40075017) * 360;
 	},
 

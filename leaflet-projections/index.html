@@ -21,9 +21,27 @@
 </head>
 
 <body class="">
-	<div id="map_3857" style="height: 33%; width: 100%; position: relative;"></div>
-	<div id="map_4326" style="height: 33%; width: 100%; position: relative;"></div>
-	<div id="map_25830" style="height: 33%; width: 100%; position: relative;"></div>
+<table style="width:100%; height:100%">
+<tr style="height: 50%; width: 50%">
+<td style="height: 50%; width: 50%" id="map_3857">
+	<!--<div id="map_3857" style="height: 100%; width: 100%; position: relative;"></div>-->	
+</td>
+<td style="height: 50%; width: 50%" id="map_4326">
+	<!--<div id="map_4326" style="height: 100%; width: 100%; position: relative;"></div>-->
+</td>
+<tr>
+<tr style="height: 100%; width: 50%">
+<td style="height: 50%; width: 50%" id="map_25830">
+	<!--<div id="map_3857" style="height: 100%; width: 100%; position: relative;"></div>-->	
+</td>
+<td style="height: 50%; width: 50%" id="map_25830_pnoa">
+	<!--<div id="map_3857" style="height: 100%; width: 100%; position: relative;"></div>-->	
+</td>
+<tr>
+
+</table>
+	
+	<!--<div id="map_25830" style="height: 33%; width: 100%; position: relative;"></div>-->
 <script>
 
 	var url = "http://www.ign.es/wmts/pnoa-ma?";
@@ -50,6 +68,7 @@
 			
 		});
 */
+
 	
 var crsETRS89 = new L.Proj.CRS.TMS('EPSG:25830',
    '+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs',
@@ -63,14 +82,14 @@ var crsETRS89 = new L.Proj.CRS.TMS('EPSG:25830',
 );
 
 
-var pnoaETRS89 = new L.Proj.CRS('EPSG:25830',
+var pnoaETRS89 = new L.Proj.CRS.TMS('EPSG:25830',
 	'+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs',
+	[-1079526.5850090983,2500875.6941688014,1228424.5314746893,5056867.6606168505],
 	{
 		resolutions: [
-			610.35123300645204835746,305.17561650322744526420,152.58780825161315419791,76.29390412580644920126,38.14695206290335960375,19.07347603145165138017,9.53673801572581147923,3.96874785750115641747,2.64583190500077103380,1.98437392875057820874,1.32291595250038551690,0.66145797625019273625,0.26458319050007705897,0.13229159525003852949
+			78271.51698,39135.75849,19567.879245,9783.9396225,4891.96981125,2445.984905625,1222.9924528125,611.4962264063,305.7481132031,152.8740566016,76.4370283008,38.2185141504,19.1092570752,9.5546285376,4.7773142688,2.3886571344,1.1943285672,0.5971642836,0.2985821418,0.1492910709
 		],
-		origin: [0, 0],
-		bounds:  L.bounds([-1079526.5850090983,2500875.6941688014],[1228424.5314746893,5056867.6606168505])
+		origin: [1000000000000000, 0]		
 	});
 
 var topoETRS89 = new L.Proj.CRS('EPSG:25830',
@@ -85,34 +104,72 @@ var topoETRS89 = new L.Proj.CRS('EPSG:25830',
 
 
 
+var pnoa3857 = new L.Proj.CRS.TMS("EPSG:3857",
+	"+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs",
+	[-20037508.342789, -20037508.342789, 20037508.342789, 20037508.342789],
+	{
+		resolutions: [
+			156543.0339280410,78271.51696402048,39135.75848201023,19567.87924100512,9783.939620502561,4891.969810251280,2445.984905125640,1222.992452562820,611.4962262814100,305.7481131407048, 152.8740565703525, 76.43702828517624, 38.21851414258813, 19.10925707129406, 9.554628535647032, 4.777314267823516, 2.388657133911758, 1.194328566955879, 0.5971642834779395
+			],
+		origin: [0, 0],
+		//bounds:  L.bounds([-20037508.342789, -20037508.342789],[20037508.342789, 20037508.342789])
+	});
+
+var pnoa4326 = new L.Proj.CRS.TMS("EPSG:4326",
+	"+proj=longlat +datum=WGS84 +no_defs ",
+	[-180.0000, -90.0000, 180.0000, 90.0000],
+	{
+		resolutions: [
+              0.00548287841290889,0.00274143920645446,0.00137071960322722,0.00068535980161361,0.00034267990080681,0.00017133995040340,0.00008566997520170,0.00003565186859210,0.00002376791239473,0.00001782593429605,0.00001188395619737,0.00000594197809868,0.00000237679123947,0.00000118839561974
+              ],
+		origin: [0, 0],
+		//bounds:  L.bounds([-20037508.342789, -20037508.342789],[20037508.342789, 20037508.342789])
+	});
+
+var crsETRS89 = new L.Proj.CRS.TMS('EPSG:25830',
+   '+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs',
+    [207256.000000,4140229.000000,1209991.000000,4565432.000000], 
+    {
+        origin: [0, 0],
+        resolutions: [
+              610.35123300645204835746,305.17561650322744526420,152.58780825161315419791,76.29390412580644920126,38.14695206290335960375,19.07347603145165138017,9.53673801572581147923,3.96874785750115641747,2.64583190500077103380,1.98437392875057820874,1.32291595250038551690,0.66145797625019273625,0.26458319050007705897,0.13229159525003852949
+              ],
+    }
+);
 
 
+var wgs84 = L.extend({}, L.CRS, {
+	projection: L.extend({}, L.Projection.LonLat, {bounds:L.bounds([-180, -90], [180, 90])}),
+	transformation: new L.Transformation(1 / 180, 1, -1 / 180, 0.5),
+	getSize: function (zoom) {
+		var b = this.projection.bounds,
+		    s = this.scale(zoom),
+		    min = this.transformation.transform(b.min, s),
+		    max = this.transformation.transform(b.max, s);
 
-/*
-  var proj25830 = L.CRS["EPSG25830"];
-  var pos1 = new L.LatLng(21.899, -18.162);
-  var pos12= new L.LatLng(45.286, 6.289 );
-  var project1 = proj25830.projection.project(pos1);
-  var project2 = proj25830.projection.project(pos12);
-  
-  console.log("coord1 %O", project1);
-  console.log("coord2 %O", project2);
-*/
-
-
-
+		return L.point(Math.abs(max.x - min.x), Math.abs(max.y - min.y));
+	}
+});
+ 
 
 
 	var CRS_4326 = L.extend({}, L.CRS, {
-		projection: L.extend({}, L.Projection.LonLat, {bounds:L.bounds([-180, -90], [180, 90])}),
-		transformation: new L.Transformation(1 / 180, 1, -1 / 180, 0.5)
+		projection: L.extend({}, L.Projection.LonLat, {
+			bounds:L.bounds([-180, -90], [180, 90])
+		}),
+			transformation: new L.Transformation(1 / 180, 1, -1 / 180, 0.5)
 	});
 
-	var CRS_3857 = L.CRS.EPSG3857;
-	var CRS_25830 = crsETRS89;
 	
-	console.log("New 4326 %O",CRS_4326);
-	console.log("Old 4326 %O",L.CRS.EPSG4326);
+
+	var CRS_4326 = L.CRS.EPSG4326;
+	var CRS_3857 = pnoa3857;
+	var CRS_25830 = crsETRS89;
+	var CRS_25830_pnoa = pnoaETRS89;
+
+	
+	console.log("New pnoa4326 %O",pnoa4326);
+	console.log("Old 4326 %O",CRS_4326);
 	
 	var map = L.map('map_3857', {
 	  crs: CRS_3857,
@@ -128,7 +185,13 @@ var topoETRS89 = new L.Proj.CRS('EPSG:25830',
 
 
 	var map25830 = L.map('map_25830', {
-	  crs: CRS_25830,
+	  crs: CRS_25830_pnoa,
+	  continuousWorld: false,
+	  worldCopyJump: false
+	}).setView([39.425, -0.37], 8);
+
+	var map_25830_pnoa = L.map('map_25830_pnoa', {
+	  crs: CRS_25830_pnoa,
 	  continuousWorld: false,
 	  worldCopyJump: false
 	}).setView([39.425, -0.37], 8);
@@ -137,7 +200,7 @@ var topoETRS89 = new L.Proj.CRS('EPSG:25830',
 
 	//Build matrix with zoom and topLeftCorner 4 4326CRS
 	var matrix4326 = getMatrix("EPSG:4326:", new L.LatLng(90 ,-180),19);
-	//var matrix25830 = getMatrix25380();
+	var matrix25830_pnoa = getMatrix25380();
 	var matrix25830  = getTopograficoMatrix();
 	var matrix3857 = getMatrix("", new L.LatLng(20037508.3428,-20037508.3428),22);
 
@@ -145,7 +208,7 @@ var topoETRS89 = new L.Proj.CRS('EPSG:25830',
 	var layer4326 = createWMTSlayer(url, "OI.OrthoimageCoverage", "EPSG:4326", matrix4326,256);	
 	//var layer25830 = createWMTSlayer(urltopo, "topografico", "ETRS89CV", matrix25830);
 	//var layer25830 = createWMTSlayer(url, "OI.OrthoimageCoverage", "EPSG:25830", matrix25830);
-
+	var layer25830_pnoa = createWMTSlayer(url, "OI.OrthoimageCoverage", "EPSG:25830", matrix25830_pnoa,256);	
 
 
 	var layer25830  = new L.TileLayer('http://terramapas.icv.gva.es/topografico/wmts?service=WMTS&request=GetTile&version=1.0.0&layer=topografico&style=default&tilematrixset=ETRS89CV&TileMatrix={z}&TileRow={y}&TileCol={x}', {
@@ -153,21 +216,38 @@ var topoETRS89 = new L.Proj.CRS('EPSG:25830',
 		attribution: '&copy; <a href="http://www.disid.com/">DISID</a> Topografico, WMTS',
 	});
 
+	var pnoa432625830  = new L.TileLayer('http://www.ign.es/wmts/pnoa-ma?service=WMTS&request=GetTile&version=1.0.0&layer=OI.OrthoimageCoverage&style=default&tilematrixset=EPSG:4326&TileMatrix=EPSG:4326:{z}&TileRow={y}&TileCol={x}', {
+		continuousWorld: true,
+		attribution: '&copy; <a href="http://www.disid.com/">DISID</a> Topografico, WMTS',
+	});
+
+	var pnoa25830_layer  = new L.TileLayer('http://www.ign.es/wmts/pnoa-ma?service=WMTS&request=GetTile&version=1.0.0&layer=OI.OrthoimageCoverage&style=default&tilematrixset=EPSG:25830&format=image%2Fpng&height=256&width=256&TileMatrix={z}&TileRow={y}&TileCol={x}', {
+		continuousWorld: true,
+		attribution: '&copy; <a href="http://www.disid.com/">DISID</a> PNOA, WMTS',
+	});
+
+
 
 	console.log("3857 %O", matrix3857);
 	console.log("25830 %O", matrix25830);
 
 	map.addLayer(layer3857);	
 	map4326.addLayer(layer4326);	
-	map25830.addLayer(layer25830);
+	map25830.addLayer(pnoa25830_layer);
+	//map_25830_pnoa.addLayer(pnoa25830_layer);
+	map_25830_pnoa.addLayer(layer25830_pnoa);
+
+
 
 	L.control.mousePosition().addTo(map);
 	L.control.mousePosition().addTo(map4326);
 	L.control.mousePosition().addTo(map25830);
+	L.control.mousePosition().addTo(map_25830_pnoa);
 
 	L.control.scale({'position':'bottomleft','metric':true,'imperial':false}).addTo(map);
 	L.control.scale({'position':'bottomleft','metric':true,'imperial':false}).addTo(map4326);
 	L.control.scale({'position':'bottomleft','metric':true,'imperial':false}).addTo(map25830);
+	L.control.scale({'position':'bottomleft','metric':true,'imperial':false}).addTo(map_25830_pnoa);
 
 	}) 
 
