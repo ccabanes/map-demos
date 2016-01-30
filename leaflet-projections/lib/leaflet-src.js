@@ -1919,14 +1919,12 @@ L.Map = L.Class.extend({
 			this._sizeChanged = false;
 		}
 		var result = this._size.clone();
-		console.log("getSize: %O", result);
 		return this._size.clone();
 	},
 
 	getPixelBounds: function () {
 		var topLeftPoint = this._getTopLeftPoint();
 		var result = L.Bounds(topLeftPoint, topLeftPoint.add(this.getSize()));;
-		console.log("getPixelBounds: %O", result);
 		return new L.Bounds(topLeftPoint, topLeftPoint.add(this.getSize()));
 	},
 
@@ -1948,14 +1946,12 @@ L.Map = L.Class.extend({
 
 	getZoomScale: function (toZoom) {
 		var crs = this.options.crs;
-		var result = crs.scale(toZoom) / crs.scale(this._zoom);
-		debugger;
+		var result = crs.scale(toZoom) / crs.scale(this._zoom);		
 		return result;
 	},
 
 	getScaleZoom: function (scale) {
 		var result = this._zoom + (Math.log(scale) / Math.LN2);
-		console.log("getScaleZoom: " + result );
 		return result;
 	},
 
@@ -5934,9 +5930,7 @@ L.Circle = L.Path.extend({
 
 	// TODO Earth hardcoded, move into projection code!
 
-	_getLatRadius: function () {
-		debugger;
-		console.log("Harcored _getLatRadius");
+	_getLatRadius: function () {		
 		return (this._mRadius / 40075017) * 360;
 	},
 
