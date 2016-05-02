@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)http://terramapas.icv.gva.es/topografico/demo/wmts -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>DEMO WMTS</title>
+    <style type="text/css">
+    html, body {
+        height: 100%;
+        width: 100%;
+        border: 0px;
+        margin: 0px;
+        padding: 0px;
+    }
+    #map {
+        width: calc(100% - 2px);
+        height: calc(100% - 2px);
+        border: 1px solid black;
+        margin: 0px;
+        padding: 0px;
+    }
+    </style>
+    <script src="./src/OpenLayers.js"></script>
+    <script type="text/javascript">
+
+var map;
+function init(){
+    map = new OpenLayers.Map( 'map', {
+        displayProjection: new OpenLayers.Projection("EPSG:4326")
+    } );
+    var topografico_ETRS89CV_wmts_layer = new OpenLayers.Layer.WMTS({
+        name: "topografico-ETRS89CV-WMTS",
+        url: "http://terramapas.icv.gva.es/topografico/wmts/",
+        layer: 'topografico',
+        matrixSet: 'ETRS89CV',
+        format: 'image/png',
+        style: 'default',
+        gutter:0,buffer:0,isBaseLayer:true,transitionEffect:'resize',
+        resolutions:[610.35123300645204835746,305.17561650322744526420,152.58780825161315419791,76.29390412580644920126,38.14695206290335960375,19.07347603145165138017,9.53673801572581147923,3.96874785750115641747,2.64583190500077103380,1.98437392875057820874,1.32291595250038551690,0.66145797625019273625,0.26458319050007705897,0.13229159525003852949],
+        zoomOffset:0,
+        units:"m",
+        maxExtent: new OpenLayers.Bounds(207256.000000,4140229.000000,1209991.000000,4565432.000000),
+        projection: new OpenLayers.Projection("EPSG:25830".toUpperCase()),
+        sphericalMercator: false
+      }
+    );
+    map.addLayer(topografico_ETRS89CV_wmts_layer);
+
+
+        var layerWMS = new OpenLayers.Layer.WMS( "TOPOGRAFICO WMS",
+                "http://terramapas.icv.gva.es/topografico/wms/", {layers: 'topografico'} );
+        map.addLayer(layerWMS);
+   
+
+    if(!map.getCenter())
+        map.zoomToMaxExtent();
+    map.addControl(new OpenLayers.Control.LayerSwitcher());
+    map.addControl(new OpenLayers.Control.MousePosition());
+}
+    </script>
+
+<body onload="init()">
+    <div id="map" class="olMap">
+    </div>
+
+
+</body></html>

@@ -1,0 +1,120 @@
+
+<!-- saved from url=(0025)http://leaflet.melard.fr/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>WMTS examples</title>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width">
+
+<link rel="stylesheet" href="css/leaflet.css">
+<link rel="stylesheet" href="css/L.Control.MousePosition.css">
+     
+<script src="lib/leaflet-src.js"></script>
+<script src="lib/proj4-compressed.js"></script>
+<script src="src/proj4leaflet.js"></script>
+<script src="lib/leaflet-tilelayer-wmts-src.js"></script>
+<script src="lib/L.Control.MousePosition.js"></script>
+<script src="lib/jquery-1.12.0.min.js"></script>
+
+</head>
+
+<body class="">	
+	<div id="map_25830" style="height: 33%; width: 100%; position: relative;"></div>
+<script>
+
+	var url = "http://www.ign.es/wmts/pnoa-ma?";
+	var wmtsParams="service=WMTS&request=GetCapabilities";
+
+	$( document ).ready(function(){
+
+	$.ajax({
+		  url: url+wmtsParams,
+		}).done(function(response) {						
+	  	console.log("Capabilities XML: %O", response);
+	}).fail(function(e){
+		console.log("Error: " + e);
+	});
+
+	//Define 25830 proj
+	L.CRS.EPSG25830 = new L.Proj.CRS('EPSG:25830',
+		'+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs',
+		{
+			resolutions: [
+			              2048, 1024, 512, 256, 128,
+			              64, 32, 16, 8, 4, 2, 1, 0.5, 0.2, 0.1, 0.05
+			              ],
+			origin: [0, 0]
+		});
+
+	var CRS_4326 = L.CRS.EPSG4326;
+	var CRS_3857 = L.CRS.EPSG3857;
+	var CRS_25830 = L.CRS.EPSG25830;
+
+	var map25830 = L.map('map_25830', {
+	  crs: CRS_25830,
+	  continuousWorld: true,
+	  worldCopyJump: false
+	}).setView([39.425, -0.37], 4);
+	L.control.scale({'position':'bottomleft','metric':true,'imperial':false}).addTo(map25830);
+
+	//Build matrix with zoom and topLeftCorner 4 4326CRS	
+	var matrix25830 = getMatrix25380();
+	
+
+	var layer = "OI.OrthoimageCoverage";
+	var tilematrixSet25830 = "EPSG:25830";
+	var wmtsLayer25830 = new L.TileLayer.WMTS( url ,
+		           {
+		               layer: layer,
+		               style: "default",
+		               tilematrixSet: tilematrixSet25830,
+		               format: "image/png"
+		               //matrixIds: matrix25830
+		           });
+	map25830.addLayer(wmtsLayer25830);	
+	L.control.mousePosition().addTo(map25830);
+
+	}) 
+
+	//Build id-leftCorner matrix 
+	function getMatrix(iname, latLong, index){		
+		var matrixId = new Array(index);
+        for (var i= 0; i<index; i++) {
+            matrixId[i]= {
+                identifier    : iname? iname + i : "" + i,
+                topLeftCorner : latLong         
+            };
+        }
+        return matrixId;
+	}
+
+	function getMatrix25380(){
+		var matrix = new Array(19);
+		matrix[0] = {identifier: 1, topLeftCorner : new L.LatLng(-1968157.095, 22856087)};
+        matrix[1] = {identifier: 1, topLeftCorner : new L.LatLng(-1968157.095, 12837333)};
+        matrix[2] = {identifier: 2, topLeftCorner : new L.LatLng(-1968157.095, 7827955.0)};
+        matrix[3] = {identifier: 3, topLeftCorner : new L.LatLng(-1968157.095, 7827955.0)};
+        matrix[4] = {identifier: 4, topLeftCorner : new L.LatLng(-1968157.095, 7827955.0)};
+        matrix[5] = {identifier: 5, topLeftCorner : new L.LatLng(-1968157.095, 7827955.0)};
+        matrix[6] = {identifier: 6, topLeftCorner : new L.LatLng(-1968157.095, 7514869.0)};
+        matrix[7] = {identifier: 7, topLeftCorner : new L.LatLng(-1968157.095, 7358326.0)};
+        matrix[8] = {identifier: 8, topLeftCorner : new L.LatLng(-1968157.095, 7280055.0)};
+        matrix[9] = {identifier: 9, topLeftCorner : new L.LatLng(-1968157.095, 7280055.0)};
+        matrix[10] = {identifier:10, topLeftCorner : new L.LatLng(-1968157.095, 7280055.0)};
+        matrix[11] = {identifier:11, topLeftCorner : new L.LatLng(-1968157.095, 7280055.0)};
+        matrix[12] = {identifier:12, topLeftCorner : new L.LatLng(-1968157.095, 7275163.0)};
+        matrix[13] = {identifier:13, topLeftCorner : new L.LatLng(-1968157.095, 7272717.0)};
+        matrix[14] = {identifier:14, topLeftCorner : new L.LatLng(-1968157.095, 7271494.0)};
+        matrix[15] = {identifier:15, topLeftCorner : new L.LatLng(-1968157.095, 7272105.0)};
+        matrix[16] = {identifier:16, topLeftCorner : new L.LatLng(-1968157.095, 7271800.0)};
+        matrix[17] = {identifier:17, topLeftCorner : new L.LatLng(-1968157.095, 7271647.0)};
+        matrix[18] = {identifier:18, topLeftCorner : new L.LatLng(-1968157.095, 7271570.0)};
+        matrix[19] = {identifier:19, topLeftCorner : new L.LatLng(-1968157.095, 7271532.0)};
+        return matrix
+    }
+	
+</script>
+</body>
+</html>

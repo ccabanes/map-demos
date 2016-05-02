@@ -1,0 +1,85 @@
+
+<!-- saved from url=(0025)http://leaflet.melard.fr/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>WMTS Cantabria</title>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width">
+
+<link rel="stylesheet" href="css/L.Control.MousePosition.css">     
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+
+<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<script src="lib/proj4-compressed.js"></script>
+<script src="src/proj4leaflet.js"></script>
+<script src="lib/L.Control.MousePosition.js"></script>
+</head>
+
+<body>
+<div id ="mapCantabria" style="width:100%; height:100%"></div>	
+<script>
+
+	var url = "http://geoservicios.cantabria.es/inspire/rest/services/Ortofoto_2014/MapServer/WMTS?";
+
+	var cantabria_resol = [541.8677504021,270.9338752011,203.2004064008,135.4669376005,101.6002032004,67.7334688003,33.8667344001,16.9333672001,8.4666836,4.2333418,2.1166709,1.05833545,0.529167725,0.2645838625,0.1322919313];
+
+	var cantabria_scale = function(zoom) {	  	
+		return 1 / cantabria_resol[zoom];
+	};
+
+	var ETRS89_Cantabria = new L.Proj.CRS('EPSG:25830',
+	'+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs',
+	{
+	resolutions: cantabria_resol,
+	origin: [-5120900.0 , 9998100.0]
+	});
+
+
+	var mapCantabria = L.map('mapCantabria', {
+		crs: ETRS89_Cantabria,
+		continuousWorld: true,
+		worldCopyJump: false, 
+		scale: cantabria_scale
+	}).setView([43.421936, -3.781941], 7);
+
+
+	var can_orto_Url_WMTS = 'http://geoservicios.cantabria.es/inspire/rest/services/Ortofoto_2014/MapServer/WMTS?service=WMTS&request=GetTile&version=1.0.0&layer=Ortofoto_2014&style=default&tilematrixset=default028mm&TileMatrix={z}&TileRow={y}&TileCol={x}',
+	attrib = 'Ortofoto 2014 OGC WMTS',
+	Orto2014_Layer = new L.TileLayer(can_orto_Url_WMTS, {
+	    scheme: 'xyz',
+	    maxZoom: cantabria_resol.length - 1,
+	    minZoom: 0,
+	    opacity: 0.5,
+	    continuousWorld: true,
+	    attribution: attrib
+	});	
+
+	var can_base_Url_WMTS = 'http://geoservicios.cantabria.es/inspire/rest/services/Cartografia_Basica_Topografica/MapServer/WMTS?service=WMTS&request=GetTile&version=1.0.0&layer=Cartografia_Basica_Topografica&style=default&tilematrixset=default028mm&TileMatrix={z}&TileRow={y}&TileCol={x}',
+	attrib = 'Ortofoto 2014 OGC WMTS',
+	Base_Layer = new L.TileLayer(can_base_Url_WMTS, {
+	    scheme: 'xyz',
+	    maxZoom: cantabria_resol.length - 1,
+	    minZoom: 0,
+	    opacity: 0.5,
+	    continuousWorld: true,
+	    attribution: attrib
+	});
+
+	var carto_base ={
+		"Ortofoto 2014": Orto2014_Layer	,	
+		"Cartografía Basica" : Base_Layer
+		
+	};
+
+	
+	mapCantabria.addLayer(Orto2014_Layer);
+	mapCantabria.addLayer(Base_Layer);
+	L.control.layers(carto_base).addTo(mapCantabria);
+	L.control.mousePosition().addTo(mapCantabria);
+	L.control.scale({'position':'bottomleft','metric':true,'imperial':false}).addTo(mapCantabria);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8 />
+    <title>NBA shot map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='libs/leaflet/leaflet.js'></script>
+    <link href='libs/leaflet/leaflet.css' rel='stylesheet' />
+    <script src='libs/d3/d3.js'></script>
+    <script src='libs/lodash/lodash.js'></script>
+    <script src="https://code.jquery.com/jquery-1.12.3.js"   integrity="sha256-1XMpEtA4eKXNNpXcJ1pmMPs8JV+nwLdEqwiJeCQEkyc="   crossorigin="anonymous"></script>    
+    <script src='curry.js'></script>
+    
+</head>
+<body>
+
+<div id='map'></div>
+
+<script type="text/javascript">    
+/*
+//Curry stat options
+var statOptions ={
+    AheadBehind:null,
+    ClutchTime:null,
+    ContextFilter:"SEASON_YEAR='2015-16'",
+    ContextMeasure:"FGA",
+    DateFrom:null,
+    DateTo:null,
+    EndPeriod:null,
+    EndRange:null,
+    GameID:null,
+    GameSegment:null,
+    LastNGames:0,
+    LeagueID:"00",
+    Location:null,
+    Month:0,
+    OpponentTeamID:0,
+    Outcome:null,
+    Period:0,
+    PlayerID:201939,
+    PointDiff:null,
+    Position:null,
+    RangeType:null,
+    RookieYear:null,
+    Season:"2015-16",
+    SeasonSegment:null,
+    SeasonType:"Regular Season",
+    StartPeriod:null,
+    StartRange:null,
+    TeamID:0,
+    VsConference:null,
+    VsDivision:null
+};
+
+
+var settings = {
+  "async": true,
+  "crossDomain": true,
+  "url": "http://stats.nba.com/stats/shotchartdetail?CFID=33&CFPARAMS=2015-16&ContextFilter=&ContextMeasure=FGA&DateFrom=&DateTo=&GameID=&GameSegment=&LastNGames=0&LeagueID=00&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerID=201939&PlusMinus=N&Position=&Rank=N&RookieYear=&Season=2015-16&SeasonSegment=&SeasonType=Regular%20Season&TeamID=0&VsConference=&VsDivision=&mode=Advanced&showDetails=0&showShots=1&showZones=0",
+  "method": "GET",
+  "headers": {
+    "cache-control": "no-cache",
+    "postman-token": "863e81b8-fea3-7c8e-2091-fc7793443543"
+  }, 
+  "dataType": "jsonp"   
+}
+
+jQuery.ajax(settings).done(manageNBAresponse).fail(function(error){
+    console.log(error);
+});
+
+
+
+*/
+
+jQuery( document ).ready(function() {
+    manageNBAresponse(curry);
+});
+
+
+
+function manageNBAresponse(response){
+
+    var jsonP = jQuery.parseJSON(response);
+    var options = jsonP;
+    var resultSets = jsonP.resultSets;
+
+    var shots = resultSets[0];
+    var headerShots = shots.headers;
+    var shotsData = shots.rowSet;
+
+
+    _.forEach(shotsData, function(value, key) {
+          //console.log(key);
+          //console.log(value);
+        });
+
+    var made = _.find(shotsData,"Made Shot");
+    console.log(made);
+    
+    //console.log(response);
+}
+
+</script>
+
+
+
+
+
+
+</body>
+</html>
