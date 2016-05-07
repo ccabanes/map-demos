@@ -1,5 +1,4 @@
 
-<!-- saved from url=(0025)http://leaflet.melard.fr/ -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <title>Leaflet como visor de imágenes</title>
@@ -9,7 +8,7 @@
 <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
 <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
 <script src="../../libs/lib/proj4-compressed.js"></script>
-<script src="../../libs/lib/L.Control.MousePosition.js"></script>
+<script src="../../libs/lib/L.Control.MousePosition.js"></script>	
 </head>
 
 <body>
@@ -20,7 +19,7 @@
 	var map = L.map('map', {
     	crs: L.CRS.Simple
 	});
-	
+
 	var imageBounds = [[0,0], [500,700]];
 	var image = L.imageOverlay('https://unsplash.it/700/500/?random', imageBounds).addTo(map);
 	map.fitBounds(imageBounds);

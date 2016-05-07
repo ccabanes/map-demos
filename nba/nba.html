@@ -14,7 +14,7 @@
 </head>
 <body>
 
-<div id='map' style="width: 100; height: 500px"></div>
+<div id='map' style="width: 600px; height: 700px"></div>
 <div id='logs'>	
 </div>
 
@@ -79,13 +79,10 @@ var mapOptions={
 };
 var map = L.map('map', {
     crs: L.CRS.Simple,
-    center: [0, 0],
-    zoom: 1
+    center: [295, 0],
+    zoom: 0
 });
-map.on("click", function (e){
-	//console.log(e):
-	jQuery("#logs").text(e.latlng);
-})
+
 var layer = L.featureGroup();
 mapOptions.layers.shots = layer;
 map.addLayer(mapOptions.layers.shots);
@@ -178,12 +175,9 @@ function locateShotOnMap(shot){
 function drawCourt(){
     var courtLayer = L.featureGroup();
     var courtStyle = {
-            fill: false,            
-            weight: 2.5,
-            opacity: 0.8,
-            color: 'black',
-            //dashArray: '3',
-            fillOpacity: 1
+            fill: true,                        
+            opacity: 1,
+            color: 'white',                        
     };
     var courDashtStyle = {
             weight: 1.5,
@@ -192,37 +186,15 @@ function drawCourt(){
             dashArray: '3',
             fillOpacity: 1
     };
-    //basketball hoop
-    var hoop = L.circle([0,0], 6.25, courtStyle).addTo(map);
-    courtLayer.addLayer(hoop);
 
-    var tripleLine = L.circle([0,0], 237.5, courtStyle).addTo(map);
-    var clipArea = L.rectangle([[100,-300],[280,300]]).addTo(map);
+    var courtBounds = [[-55, -250], [885, 250]]    
+    var court = 'nba_court.svg';    
+    var court_base = 'nba_court_white.png';    
+        
+    
+    L.imageOverlay(court_base, courtBounds).addTo(map);
+    L.imageOverlay(court, courtBounds).addTo(map);
 
-    courtLayer.addLayer(tripleLine);
-
-    var latlngs = [];
-    latlngs.push( L.latLng(-1.6, -216));
-    latlngs.push( L.latLng(0, 216));
-    var polyline = L.polyline(latlngs,courtStyle).addTo(map);
-
-    var latlngs = [];
-    latlngs.push( L.latLng(0, 0));
-    latlngs.push( L.latLng(23, 0));
-    var polyline = L.polyline(latlngs,courtStyle).addTo(map);
-
-
-
-    //Create backboard
-    var bounds = [[0,-300], [564,300]];
-    var backboard = L.rectangle(bounds, courtStyle);
-    courtLayer.addLayer(backboard);
-
-
-    //Add to map
-    courtLayer.bringToFront();
-    mapOptions.layers.court = courtLayer;
-    mapOptions.map.addLayer(mapOptions.layers.court);
 }
 
 </script>
