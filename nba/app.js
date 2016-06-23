@@ -50,9 +50,43 @@ var mapOptions={
 };
 
 
+function manageNBAresponse(){    
+    
+    var shots = mapOptions.shots.resultSets[0];
+    mapOptions.shots.headerShots = shots.headers;
+    mapOptions.shots.shotsData.fulldata = shots.rowSet;
+    mapOptions.shots.location.x = null;
+    mapOptions.shots.location.y = null;
+
+    //Get request criterias
+    var jQueryObject =  jQuery( "#selector" );
+
+    if(mapOptions.shots.criteria != "ALL"){        
+        var location =_.indexOf(mapOptions.shots.headerShots, mapOptions.shots.criteria);
+        mapOptions.shots.criteriaIndex = location;
+        var newMapValues = _.map(mapOptions.shots.shotsData.fulldata, location);
+        var uniqueValues = _.uniq(newMapValues);
+
+        //Load into new selector        
+        var html = '<div><h4>Select criteria:</h4><select id ="shotCriteria" class="form-control"></select></div>';    
+        createSelector(jQueryObject,html,"shotCriteria" );
+        
+        var jQueryCriteriaObject = jQuery("#shotCriteria");
+        loadCriteria(uniqueValues,jQueryCriteriaObject,"");      
+            
+    }else{       
+       createSelector(jQueryObject,"","shotCriteria" );
+       mapOptions.shots.shotsData.criteria = mapOptions.shots.shotsData.fulldata;
+       printShots();
+    }
+        
+     jQuery("#shotCriteria").trigger("change");
+}
+
 function loadCriteria(map, object,defaultSelection){
-    mapOptions.shots.criteriaOptions =[];
-  _.forEach(map, function(value, key) {
+    mapOptions.shots.criteriaOptions =[];    
+
+  _.forEach(_.sortBy(map), function(value, key) {
         mapOptions.shots.criteriaOptions.push(value);
          if(value == defaultSelection || object.find("option").length == 0 ){
             object.append('<option value="'+key+'" selected="selected">'+value+'</option>');
@@ -64,34 +98,31 @@ function loadCriteria(map, object,defaultSelection){
 }
 
 function buildSelectOption(response, defaultSelection, selector){
-	 var jsonP = jQuery.parseJSON(response);
-     mapOptions.response= jsonP;
-     mapOptions.shots.options = mapOptions.response;
-     mapOptions.shots.resultSets = mapOptions.response.resultSets;
+    var jsonP = jQuery.parseJSON(response);
+    mapOptions.response= jsonP;
+    mapOptions.shots.options = mapOptions.response;
+    mapOptions.shots.resultSets = mapOptions.response.resultSets;
 
-     //Load criterias	
-     var jqObject = jQuery("#"+selector).find("optgroup");
-     loadCriteria(mapOptions.shots.resultSets[0].headers,jqObject,defaultSelection);          
+    //Load criterias	
+    var jqObject = jQuery("#"+selector).find("optgroup");
+    loadCriteria(mapOptions.shots.resultSets[0].headers,jqObject,defaultSelection);          
 
-     //Declare listener
-     jQuery("#"+selector).on("change", selectorChange);
-     jQuery("#"+selector).trigger("change");
-
+    //Declare listener
+    jQuery("#"+selector).on("change", selectorChange);
+    jQuery("#"+selector).trigger("change");
 }
 
 function selectorChange(){
-        var selectedOption =  jQuery("#shotTypeSelector").find(":selected").text();
-         mapOptions.shots.criteria=selectedOption;
-         manageNBAresponse();
+    var selectedOption =  jQuery("#shotTypeSelector").find(":selected").text();
+    mapOptions.shots.criteria=selectedOption;
+    manageNBAresponse();
 }
 
 function createSelector(jQueryObject, html, id){
-    jQuery("#"+id).parent().remove();
-    //jQuery("#"+id).unbind( "click" );
+    jQuery("#"+id).parent().remove();    
     jQueryObject.append(html);
-     jQuery("#"+id).on("change", function(){
-        console.log(mapOptions.shots.criteriaOptions);
-        var selected = _.findIndex(mapOptions.shots.criteriaOptions, jQuery("#shotCriteria").find("option:selected").text());
+    jQuery("#"+id).on("change", function(){        
+        var selected = _.findIndex(mapOptions.shots.criteriaOptions, jQuery("#"+id).find("option:selected").text());
         var index = _.findIndex(mapOptions.shots.criteriaOptions, function(o) {
             var selectedOption  = jQuery("#shotCriteria").find("option:selected").text()
             if(o == selectedOption ){
@@ -105,50 +136,11 @@ function createSelector(jQueryObject, html, id){
 
 }
 
-function manageNBAresponse(){    
-    
-    var shots = mapOptions.shots.resultSets[0];
-    mapOptions.shots.headerShots = shots.headers;
-    mapOptions.shots.shotsData.fulldata = shots.rowSet;
-    mapOptions.shots.location.x = null;
-    mapOptions.shots.location.y = null;
-
-    //Get request criterias
-    if(mapOptions.shots.criteria != "ALL"){        
-        var location =_.indexOf(mapOptions.shots.headerShots, mapOptions.shots.criteria);
-        mapOptions.shots.criteriaIndex = location;
-        var newMapValues = _.map(mapOptions.shots.shotsData.fulldata, location);
-        var uniqueValues = _.uniq(newMapValues);
-
-        //Load into new selector
-        var jQueryObject =  jQuery( "#selector" );
-        var html = '<div><h4>Select criteria:</h4><select id ="shotCriteria" class="form-control"></select></div>';    
-        createSelector(jQueryObject,html,"shotCriteria" );
-        
-        var jQueryCriteriaObject = jQuery("#shotCriteria");
-        loadCriteria(uniqueValues,jQueryCriteriaObject,"");      
-
-              
-    }else{
-        //NO criteria 
-       mapOptions.shots.shotsData.criteria = mapOptions.shots.shotsData.fulldata;
-       printShots();
-    }
-        
-     jQuery("#shotCriteria").trigger("change");
-}
 
 function printShots(){
-    if(mapOptions.map.hasLayer(mapOptions.layers.shots)){
-        mapOptions.map.removeLayer(mapOptions.layers.shots);
-    }
-    
-    var layer = L.featureGroup();
-    mapOptions.layers.shots = layer;    
-    mapOptions.map.addLayer(layer);
- 
 
-    //Clean layer values from last criteria selection
+   cleanLayers();
+     
     _.forEach(mapOptions.shots.shotsData.criteria, function(value, key) {
         if(mapOptions.shots.location.x == null || mapOptions.shots.location.y == null){
             var x =_.indexOf(mapOptions.shots.headerShots, "LOC_X");
@@ -164,7 +156,20 @@ function printShots(){
         });   
 }
 
+function cleanLayers(){
+    //Clean layer values from last criteria selection
+    if(mapOptions.map.hasLayer(mapOptions.layers.shots)){
+        mapOptions.map.removeLayer(mapOptions.layers.shots);
+    }
+    
+    var layer = L.featureGroup();
+    mapOptions.layers.shots = layer;    
+    mapOptions.map.addLayer(layer);
+}
+
+
 function locateShotOnMap(shot){
+
     var xy = L.latLng(shot[mapOptions.shots.location.y], shot[mapOptions.shots.location.x]);
     var shotLocation = L.circleMarker(xy, style(shot));
     shotLocation.properties = shot;
@@ -172,17 +177,18 @@ function locateShotOnMap(shot){
      shotLocation.on({        
         click: displayPopup
     });
-    mapOptions.layers.shots.addLayer(shotLocation);     
+    mapOptions.layers.shots.addLayer(shotLocation);
+
     function style(shot) {
      return {
             fillColor: getColor(shot),
             weight: 2,
             opacity: 1,
             color: 'white',
-            //dashArray: '3',
             fillOpacity: 0.7
         };
     }
+
     function getColor(shot){
         if(shot[_.indexOf(mapOptions.shots.headerShots, "SHOT_MADE_FLAG")] > 0){
             return "#04B404";
@@ -191,6 +197,7 @@ function locateShotOnMap(shot){
         }
         
     }
+
     function displayPopup(e){       
         var prop = e.target.properties;
         var text = buildPopupText(prop);
