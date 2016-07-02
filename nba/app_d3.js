@@ -278,7 +278,12 @@ var svg = d3.select("#d3")
 
 
 svg.append("g")
-	.attr("class", "slices");
+	.attr("class", "slices")
+    .append("text")
+    .attr("class", "percent")
+  
+d3.select(".slices").append("text").attr("class", "totals");
+
 svg.append("g")
 	.attr("class", "labels");
 svg.append("g")
@@ -372,16 +377,32 @@ function loadNewCharData(data){
 
 	slice.exit()
 		.remove();
+
+    var percentage = (100 * data[0].value / mapOptions.shots.shotsData.criteria.length).toPrecision(3);
+    var percentageString = percentage + "%";
+    if (percentage < 0.1) {
+        percentageString = "< 0.1%";
+    }
+    var totals = data[0].value + " / " + mapOptions.shots.shotsData.criteria.length;
+
+    d3.select("text.percent").attr("dy", ".15em").attr("dx", "-1.30em")
+        .text(percentageString);   
+    d3.select("text.totals").attr("dy", "1.95em").attr("dx", "-2.30em")
+		.text(function(d) {                        
+			return totals;
+		});  
+
     }
 
     /* ------- TEXT LABELS -------*/
 	var text =  mapOptions.graphics.svg.select(".labels").selectAll("text")
-		.data( mapOptions.graphics.pie(data),  mapOptions.graphics.key);
+		.data( mapOptions.graphics.pie(data),  mapOptions.graphics.key);    
+        
 
 	text.enter()
 		.append("text")
 		.attr("dy", ".35em")
-		.text(function(d) {
+		.text(function(d) {                        
 			return d.data.label;
 		});
 	
