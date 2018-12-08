@@ -1,71 +1,159 @@
 
 <html>
-<head>    
-    <title>Basic Map</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <script src="libs/leaflet/leaflet.js"></script>
-    <link href="libs/leaflet/leaflet.css" rel="stylesheet"/>
-    <link href="styles/app.css" rel="stylesheet">
-    <link href="libs/leaflet-plugins/Leaflet.Coordinates-0.1.5.css" rel="stylesheet">
-    <script src="libs/leaflet-providers.js"></script>    
-    <script src="libs/jQuery/jquery-2.2.3.js"></script>    
-    <script src="libs/leaflet-plugins/Leaflet.Coordinates-0.1.5.min.js"></script>    
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
-    
-</head>
-<body>
+        <head>    
+            <title>Basic Map</title>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+            <meta charset="UTF-8"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1"/>
+            <script src="libs/leaflet/leaflet.js"></script>
+            <link href="libs/leaflet/leaflet.css" rel="stylesheet"/>
+            <link href="styles/app.css" rel="stylesheet">
+            <link href="libs/leaflet-plugins/Leaflet.Coordinates-0.1.5.css" rel="stylesheet">
+            <link href="libs/leaflet-plugins/L.Control.Basemaps.css" rel="stylesheet">            
+            <link href="libs/leaflet-plugins/leaflet.defaultextent.css" rel="stylesheet">            
+            <script src="libs/leaflet-providers.js"></script>    
+            <script src="libs/jQuery/jquery-2.2.3.js"></script>    
+            <script src="libs/leaflet-plugins/Leaflet.Coordinates-0.1.5.min.js"></script>    
+            <script src="libs/leaflet-plugins/L.Control.Basemaps-min.js"></script>    
+            <script src="libs/leaflet-plugins/leaflet.defaultextent.js"></script>    
+            
+            <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+            <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+            
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+            <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+        
+        </head>
+        <body>
+        
+        <div class="row">    
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div id="map"></div>    
+            </div>	
+        </div>
+        
+        <script type="text/javascript">
+            var slides = {
+                "data" : {
+                    map : undefined,
+                    markers : L.featureGroup(),
+                    baseLayer : {
+                        provider: L.tileLayer.provider('CartoDB.Positron',{id:'baselayer', description:'Default base layer'}),
+                        active : false
+                    } 
+                },
+                "fnInitializeMap": function(){
+                    var map = L.map("map", {
+                        center: [39.482039,-0.347631],
+                        zoom: 17,
+                        zoomControl:false
+                    });                    
+             
+                    //add zoom control with your options
+                    L.control.zoom({
+                        position:'bottomleft'
+                    }).addTo(map);
+            
 
-<div class="row">    
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-        <div id="map"></div>    
-    </div>	
-</div>
+                    this.data.baseLayer.provider.addTo(map);
+                    this.data.baseLayer.active=true;    
+                    slides.data.markers.addTo(map);
+                    slides.data.map=map;
 
-<script type="text/javascript">
-    var slides = {
-        "data" : {
-            map : undefined
-        },
-        "fnInitializeMap": function(){
-            var map = L.map("map", {
-                center: [39.482039,-0.347631],
-                zoom: 17
-            });
-            L.tileLayer.provider('CartoDB.Positron').addTo(map);        
-            slides.data.map=map;
-        }, 
-        "fnInitializeComponents": function (name, active){
-            if(name === "coords" && active){
-                this._fnInitializeControlCoordinates("topright", "Lat: {y}", "Long: {x}", false);
-            }            
-        },
-        "_fnInitializeControlCoordinates": function(a, b, c, d){
-                L.control.coordinates({
-                    position:a,
-                    decimals:6,
-                    useDMS:d,
-                    decimalSeperator:",",
-                    labelTemplateLat: b,
-                    labelTemplateLng:c
-                }).addTo(slides.data.map);
-        }
-    };
+                }, 
+                "fnInitializeComponents": function (name, active){
+                    
+                    if(name === "coords" && active){
+                        this._fnInitializeControlCoordinates("topright", "Lat: {y}", "Long: {x}", false);
+                    }            
+                    if(name === "geocoder" && active){
+                        this._fnInitializeGeocoder();
+                    }
+                    if(name === "basemaps" && active){
+                        this._fnInitializeBaseMaps();
+                    }
+                    if(name === "home" && active){
+                        this._fnInitializeHomeButton();
+                    }
+                },
+                "_fnInitializeHomeButton": function (){
+                    L.control.defaultExtent({
+                        position: 'bottomleft',
+                        text: 'Default Extent',
+                        title: 'Zoom a extensión por defecto',
+                        className: 'leaflet-control-defaultextent'
+                        }).addTo(slides.data.map);
+                },
+                "_fnInitializeControlCoordinates": function(a, b, c, d){
+                        L.control.coordinates({
+                            position:a,
+                            decimals:6,
+                            useDMS:d,
+                            decimalSeperator:",",
+                            labelTemplateLat: b,
+                            labelTemplateLng:c
+                        }).addTo(slides.data.map);
+                },
+                "_fnInitializeGeocoder":function(){
+                    var options={
+                        collapsed:false,
+                        defaultMarkGeocode: true,
+                        position: "topleft",
+                        placeholder: "Buscar...",
+                        errorMessage: "Sin resultados"
+                    }
+                    L.Control.geocoder(options).on('markgeocode', function(e) {
+                        var bbox = e.geocode.bbox;
+                        var circle = L.circleMarker(e.geocode.center);
+                        slides.data.markers.addLayer(circle);
+                        slides.data.map.fitBounds(bbox);
+                        var poly = L.polygon([
+                            bbox.getSouthEast(),
+                            bbox.getNorthEast(),
+                            bbox.getNorthWest(),
+                            bbox.getSouthWest()
+                        ]);
+                        slides.data.map.fitBounds(poly.getBounds());
+                        }).addTo(this.data.map);
+                        
+                    },
+                    "_fnInitializeBaseMaps": function(){
+                        //Check no active baseLayer
+                        this.data.map.eachLayer(function(layer){
+                            if(layer.options && layer.options.id === 'baselayer'){
+                                slides.data.map.removeLayer(layer);                            
+                            }                            
+                        });
 
-    $(document).ready(function(){
-    
-        slides.fnInitializeMap();
+                        var basemaps = [
+                            L.tileLayer.provider('CartoDB.Positron'),
+                            L.tileLayer.provider('OpenStreetMap.Mapnik'),
+                            L.tileLayer.provider('Stamen.Watercolor'),
+                            L.tileLayer.provider('CartoDB.DarkMatter')
+                        ];
 
-        var urlParams = new URLSearchParams(window.location.search);
-        var entries = urlParams.entries();
-        for(pair of entries) { 
-            slides.fnInitializeComponents(pair[0], pair[1]); 
-        }
-    })
-
-</script>
-</body>    
-</html>
-     
+                        this.data.map.addControl(L.control.basemaps({
+                            basemaps: basemaps,
+                            tileX: 0,  // tile X coordinate
+                            tileY: 0,  // tile Y coordinate
+                            tileZ: 1   // tile zoom level
+                        }));
+                    }
+            };
+        
+            $(document).ready(function(){
+            
+                slides.fnInitializeMap();
+        
+                var urlParams = new URLSearchParams(window.location.search);
+                var entries = urlParams.entries();
+                for(pair of entries) { 
+                    slides.fnInitializeComponents(pair[0], pair[1]); 
+                }
+            })
+        
+        </script>
+        </body>    
+        </html>
+             
+        
