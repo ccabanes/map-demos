@@ -1,0 +1,71 @@
+
+<html>
+<head>    
+    <title>Basic Map</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <script src="libs/leaflet/leaflet.js"></script>
+    <link href="libs/leaflet/leaflet.css" rel="stylesheet"/>
+    <link href="styles/app.css" rel="stylesheet">
+    <link href="libs/leaflet-plugins/Leaflet.Coordinates-0.1.5.css" rel="stylesheet">
+    <script src="libs/leaflet-providers.js"></script>    
+    <script src="libs/jQuery/jquery-2.2.3.js"></script>    
+    <script src="libs/leaflet-plugins/Leaflet.Coordinates-0.1.5.min.js"></script>    
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+    
+</head>
+<body>
+
+<div class="row">    
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div id="map"></div>    
+    </div>	
+</div>
+
+<script type="text/javascript">
+    var slides = {
+        "data" : {
+            map : undefined
+        },
+        "fnInitializeMap": function(){
+            var map = L.map("map", {
+                center: [39.482039,-0.347631],
+                zoom: 17
+            });
+            L.tileLayer.provider('CartoDB.Positron').addTo(map);        
+            slides.data.map=map;
+        }, 
+        "fnInitializeComponents": function (name, active){
+            if(name === "coords" && active){
+                this._fnInitializeControlCoordinates("topright", "Lat: {y}", "Long: {x}", false);
+            }            
+        },
+        "_fnInitializeControlCoordinates": function(a, b, c, d){
+                L.control.coordinates({
+                    position:a,
+                    decimals:6,
+                    useDMS:d,
+                    decimalSeperator:",",
+                    labelTemplateLat: b,
+                    labelTemplateLng:c
+                }).addTo(slides.data.map);
+        }
+    };
+
+    $(document).ready(function(){
+    
+        slides.fnInitializeMap();
+
+        var urlParams = new URLSearchParams(window.location.search);
+        var entries = urlParams.entries();
+        for(pair of entries) { 
+            slides.fnInitializeComponents(pair[0], pair[1]); 
+        }
+    })
+
+</script>
+</body>    
+</html>
+     

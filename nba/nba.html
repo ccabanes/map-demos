@@ -36,6 +36,7 @@ jQuery.ajax(settings).done(manageNBAresponse).fail(function(error){
     console.log(error);
 });
 */
+
 var mapOptions={
     map : null,
     layers:{
@@ -75,6 +76,7 @@ var mapOptions={
         "SHOT_MADE_FLAG":false
     }
 };
+
 var map = L.map('map', {
     crs: L.CRS.Simple,
     center: [295, 0],
@@ -84,8 +86,8 @@ var layer = L.featureGroup();
 mapOptions.layers.shots = layer;
 map.addLayer(mapOptions.layers.shots);
 mapOptions.map = map;
-jQuery( document ).ready(function() {
-    
+
+jQuery( document ).ready(function() {    
     manageNBAresponse(curry);
     drawCourt();
 });
@@ -109,7 +111,6 @@ function manageNBAresponse(response){
             }else{
                 return;
             }
-            
         }
             locateShotOnMap(value);          
         });   
@@ -119,9 +120,7 @@ function locateShotOnMap(shot){
     var shotLocation = L.circleMarker(xy, style(shot));
     shotLocation.properties = shot;
     shotLocation.setRadius(5);
-     shotLocation.on({
-        //mouseover: highlightFeature,
-        //mouseout: resetHighlight,
+     shotLocation.on({        
         click: displayPopup
     });
     mapOptions.layers.shots.addLayer(shotLocation);     
@@ -158,8 +157,7 @@ function locateShotOnMap(shot){
                 var display =mapOptions.displayInfo[mapOptions.shots.headerShots[key]];
                 if(display){
                  htmlPopup = htmlPopup.concat("<b>" + mapOptions.shots.headerShots[key] + ":</b> " + value +"</br>");
-                }
-              
+                }              
             })
             return htmlPopup;
             ;
@@ -184,7 +182,6 @@ function drawCourt(){
     var court = 'nba_court.svg';    
     var court_base = 'nba_court_white.png';    
         
-    
     L.imageOverlay(court_base, courtBounds).addTo(map);
     L.imageOverlay(court, courtBounds).addTo(map);
 }
