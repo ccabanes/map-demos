@@ -22,17 +22,14 @@ var map = L.map('map', {
     crs: L.CRS.Simple
 });
 
-var imageBounds = [[0,0], [500,700]];
-var image = L.imageOverlay('https://unsplash.it/700/500/?random', imageBounds).addTo(map);
+var imageBounds = [[0,0], [700,1000]];
+var image = L.imageOverlay('https://unsplash.it/1000x700/?random', imageBounds).addTo(map);
 map.fitBounds(imageBounds);
 
 $(document).ready(function(){
    setInterval(function(){
-       debugger;
-    var image = L.imageOverlay('https://unsplash.it/700/500/?random', imageBounds).addTo(map);
-    map.fitBounds(imageBounds);
-
-   },3000);
+     location.reload();
+   },5000);
 });
 
 
