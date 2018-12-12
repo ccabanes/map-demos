@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Display a image</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src="libs/leaflet/leaflet.js"></script>
+    <link href="libs/leaflet/leaflet.css" rel="stylesheet"/>
+    <script src="libs/jQuery/jquery-2.2.3.js"></script>    
+
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+<script>
+
+var map = L.map('map', {
+    crs: L.CRS.Simple
+});
+
+var imageBounds = [[0,0], [500,700]];
+var image = L.imageOverlay('https://unsplash.it/700/500/?random', imageBounds).addTo(map);
+map.fitBounds(imageBounds);
+
+$(document).ready(function(){
+   setInterval(function(){
+       debugger;
+    var image = L.imageOverlay('https://unsplash.it/700/500/?random', imageBounds).addTo(map);
+    map.fitBounds(imageBounds);
+
+   },3000);
+});
+
+
+</script>
+
+</body>
+</html>
+

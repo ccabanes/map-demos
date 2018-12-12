@@ -1,4 +1,3 @@
-
 <html>
 <head>    
     <title>NBA shot map</title>
@@ -17,8 +16,7 @@
 
 <div id='map' style="width:100%; height: 100%"></div>
 
-<script type="text/javascript">    
-
+<script type="text/javascript"> 
 /*
 //Curry stat options
 var statOptions ={
@@ -84,7 +82,6 @@ var map = L.map('map', {
     center: [295, 0],
     zoom: 0
 });
-
 var layer = L.featureGroup();
 mapOptions.layers.shots = layer;
 map.addLayer(mapOptions.layers.shots);
@@ -94,7 +91,6 @@ jQuery( document ).ready(function() {
     manageNBAresponse(curry);
     drawCourt();
 });
-
 function manageNBAresponse(response){
     var jsonP = jQuery.parseJSON(response);
     mapOptions.shots.options = jsonP;
@@ -119,7 +115,6 @@ function manageNBAresponse(response){
             locateShotOnMap(value);          
         });   
 }
-
 function locateShotOnMap(shot){
     var xy = L.latLng(shot[mapOptions.shots.location.y], shot[mapOptions.shots.location.x]);
     var shotLocation = L.circleMarker(xy, style(shot));
@@ -169,7 +164,6 @@ function locateShotOnMap(shot){
         }
     }
 }
-
 function drawCourt(){
     var courtLayer = L.featureGroup();
     var courtStyle = {
@@ -184,7 +178,6 @@ function drawCourt(){
             dashArray: '3',
             fillOpacity: 1
     };
-
     var courtBounds = [[-55, -250], [885, 250]]    
     var court = 'nba_court.svg';    
     var court_base = 'nba_court_white.png';    
@@ -192,5 +185,4 @@ function drawCourt(){
     L.imageOverlay(court_base, courtBounds).addTo(map);
     L.imageOverlay(court, courtBounds).addTo(map);
 }
-
 </script>

@@ -7,3 +7,7 @@ html, body, #container /*, and all other map parent selectors*/ {
     width: auto;
     height: 100%;
   }
+  .myControlCoords {
+    padding-top:50%;
+    padding-left: 50%;
+ }
